@@ -1,0 +1,15 @@
+Package: oncosnputils
+Title: Post-processing of OncoSNP Results
+Version: 0.0.0.9000
+Authors@R: person("Fong Chun", "Chan", email = "fongchunchan@gmail.com", 
+                   role = c("cre"))
+Description: This package post-processes the output of OncoSNP and provides
+             analyses functionality
+Depends: R (>= 3.1.2)
+Imports: 
+	dplyr (>= 0.4.1),
+	data.table (>= 1.9.4)
+License: MIT
+LazyData: true
+Suggests: knitr
+VignetteBuilder: knitr

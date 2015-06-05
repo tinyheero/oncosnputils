@@ -8,19 +8,18 @@
 #'        LoadPennCNVProbeData() function.
 #' @return A modified data.table of the cnvDt that contains extra columns for
 #'				 LRR, LRRShifted, BAF, etc.
-AddLRRBAF2OncosnpCNV <- function(cnvDt, qcDt, probeDt){
-
-	# getting LRR shift values for each ploidy
+AddLRRBAF2OncosnpCNV <- function(cnvDt, qcDt, probeDt) {
+	message("Getting LRR shift values for each ploidy")
 	LRRShift.ploidyConfig1 <- qcDt[ploidyNo == 1L, LRRShift]
 	LRRShift.ploidyConfig2 <- qcDt[ploidyNo == 2L, LRRShift]
 	cnvDt.LRR.BAF <- dplyr::mutate(cnvDt, 
-																 LRR = as.double(NA), 
-																 LRRShifted = as.double(NA),
-																 BAF = as.double(NA), 
-																 numProbes = as.numeric(NA), 
-																 numSnpProbes = as.numeric(NA))
-
+                                 LRR = as.double(NA), 
+                                 LRRShifted = as.double(NA),
+                                 BAF = as.double(NA), 
+                                 numProbes = as.numeric(NA), 
+                                 numSnpProbes = as.numeric(NA))
 	
+	message("Adding LRR and BAF to each CNV segment")
 	for (i in seq(nrow(cnvDt.LRR.BAF))) {
 		# display "." for each 10 iterations for progress bar
 		if (i %% 10 == 0) {

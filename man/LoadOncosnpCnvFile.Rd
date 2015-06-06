@@ -17,6 +17,6 @@ A data.table of the standard output file (.cnvs) that has its columns
 Load the OncoSNP CNV file (.cnv).
 }
 \examples{
-LoadOncosnpCnvFile
+LoadOncosnpCnvFile()
 }
 

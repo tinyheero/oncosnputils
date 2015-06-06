@@ -17,8 +17,8 @@ LoadOncosnpQcFile() function.}
 LoadPennCNVProbeData() function.}
 }
 \value{
-A modified data.table of the cnvDt that contains extra columns for
-				 LRR, LRRShifted, BAF, etc.
+A modified data.frame of the cnvDt that contains extra columns for
+        LRR, LRRShifted, BAF, etc.
 }
 \description{
 Add the LRR and BAF to each segment reported in a OncoSNP CNV file.

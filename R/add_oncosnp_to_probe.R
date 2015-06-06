@@ -1,50 +1,57 @@
 #' Add the OncoSNP information to the PennCNV probe data. 
 #'
-#' Each probe will have it's LRR value shifted and assigned a rank 
+#' Each probe will have its LRR value shifted and assigned a rank 
 #' (or multiple) according to the output of OncoSNP
 #'
-#' @param cnvDt The OncoSNP standard file (.cnvs) data.table loaded using the 
+#' @param cnvDf The OncoSNP standard file (.cnvs) data.frame loaded using the 
 #'    loadOncosnpCnvFile() function.
-#' @param qcDt The OncoSNP quality control (.qc) data.table loaded using the 
+#' @param qcDf The OncoSNP quality control (.qc) data.frame loaded using the 
 #'    LoadOncosnpQcFile() function.
-#' @param probeDt The PennCNV probe data file data.table loaded using the 
-#'    paramDescriptionLoadPennCNVProbeData() function.
+#' @param probeDf The PennCNV probe data file data.frame loaded using the 
+#'    LoadPennCNVProbeData() function.
 #' @param ploidyConfig The ploidy configuration from OncoSNP that you want to 
 #'    to map the information to.
-#' @return A modified data.table of the probeDt that contains extra columns for
+#' @return A modified data.frame of the probeDf that contains extra columns for
 #'    shifted LRR and ranks from OncoSNP
 #' @examples
 #' AddOncosnp2PennCNVProbe(..., ploidyConfig = 1)
 #' AddOncosnp2PennCNVProbe(..., ploidyConfig = 2)
-AddOncosnp2PennCNVProbe <- function(cnvDt, qcDt, probeDt, ploidyConfig = 1){
-	LRR.shift <- qcDt[ploidyNo == ploidyConfig, LRRShift]
-	probeDt.modified <- dplyr::mutate(probeDt, 
-													 LRRShifted = round(LRR + LRR.shift, 4),
-													 rankState1 = as.numeric(NA),
-													 rankState2 = as.numeric(NA),
-													 rankState3 = as.numeric(NA),
-													 rankState4 = as.numeric(NA),
-													 rankState5 = as.numeric(NA))
-	data.table::setkey(probeDt.modified, probeID)
+AddOncosnp2PennCNVProbe <- function(cnvDf, qcDf, probeDf, ploidyConfig = 1){
+  LRR.shift <- dplyr::filter_(qcDf, ~ploidyNo == ploidyConfig)[, "LRRShift"]
+  LRR.shift <- as.double(LRR.shift)
 
-	# Finding overlapping probes with each segment and adding shifted LRR
-	# and ranks of the segment states
-	cnvDf.sub <- cnvDt[ploidyNum == ploidyConfig, ]
-	for (i in seq(nrow(cnvDt))) {
-		# display "." for each 10 iterations for progress bar
-		if (i %% 10 == 0) {
-			cat('.')
-		}
-		segChr <- cnvDt[i, chr]
-		segStart <- cnvDt[i, start]
-		segEnd <- cnvDt[i, end]
-		segRank <- cnvDt[i, rank]
-		segState <- cnvDt[i, state]
-		overlappingProbes <- probeDt.modified[chr == segChr & pos >= segStart & pos <= segEnd, 
-																 probeID]
-		probeDt.modified[overlappingProbes, 
-						paste("rankState", segRank, sep = "") := segState, 
-						with = FALSE]
-	}
-	return(probeDt.modified)
+  varval <- lazyeval::interp(~round(LRR + LRR.shift, 4))
+  probeDf.modified <- dplyr::mutate_(probeDf, 
+                                     .dots = setNames(list(varval), 
+                                                      "LRRShifted"))
+  probeDf.modified[, paste("rankState", 1:5, sep = "")] <- as.numeric(NA)
+
+  # Finding overlapping probes with each segment and adding shifted LRR
+  # and ranks of the segment states
+  message("Adding shifted LRR and ranks for each probe")
+  cnvDf.sub <- dplyr::filter_(cnvDf, ~ploidyNum == ploidyConfig)
+  for (i in seq(nrow(cnvDf))) {
+    # display "." for each 10 iterations for progress bar
+    if (i %% 10 == 0) {
+      cat(".")
+    }
+
+    segChr <- as.character(cnvDf[i, "chr"])
+    segStart <- as.numeric(cnvDf[i, "start"])
+    segEnd <- as.numeric(cnvDf[i, "end"])
+    segRank <- as.numeric(cnvDf[i, "rank"])
+    segState <- as.numeric(cnvDf[i, "state"])
+    
+    vars <- ~chr == segChr & pos >= segStart & pos <= segEnd
+    overlappingProbes <- unlist(dplyr::filter_(probeDf.modified, vars)[, "probeID"])
+    varval <- lazyeval::interp(~ifelse(probeID %in% overlappingProbes, 
+                                       segState, 
+                                       NA))
+    probeDf.modified <- dplyr::mutate_(probeDf.modified,
+                                       .dots = setNames(list(varval), 
+                                                        paste("rankState", 
+                                                              segRank, 
+                                                              sep = "")))
+  }
+  return(probeDf.modified)
 }

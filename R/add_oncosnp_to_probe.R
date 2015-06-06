@@ -40,7 +40,7 @@ AddOncosnp2PennCNVProbe <- function(cnvDf, qcDf, probeDf, ploidyConfig = 1L){
     segState <- as.integer(cnvDf.sub[i, "state"])
     
     vars <- ~chr == segChr & pos >= segStart & pos <= segEnd
-    overlappingProbes <- unlist(dplyr::filter_(probeDf.modified, vars)[, "probeID"])
+    overlappingProbes <- unlist(dplyr::filter_(probeDf, vars)[, "probeID"])
     probeDf.overlappingProbes.flag <- probeDf$probeID %in% overlappingProbes
     probeDf[probeDf.overlappingProbes.flag, 
             paste("rankState", segRank, sep = "")] <- segState

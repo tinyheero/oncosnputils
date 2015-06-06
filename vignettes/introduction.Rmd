@@ -14,14 +14,15 @@ This vignette introduces you to some core functionality in the oncosnputils R pa
 The example data we are using in this package is from a [Affymetrix SNP 6.0 CEL file of the breast cancer cell-line HCC1395](ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM888nnn/GSM888107/suppl/GSM888107.CEL.gz). The raw CEL file was pre-processed through the PennCNV-Affy protocol and then run through OncoSNP (1.3) with only the SNP probes.
 
 # Loading Data
+***
 
 The oncosnputils R package provides several load functions for different input and output files of oncosnp. This functions rely on the data.table fread() function which relies for fast reading and then renames several columns so that they easier to work with in R. For instance, we can load the quality control file:
 
 ```{r}
 library("oncosnputils")
 qcFile <- system.file("extdata", "HCC1395.qc", package = "oncosnputils")
-qcDt <- LoadOncosnpQcFile(qcFile)
-knitr::kable(qcDt)
+qcDf <- LoadOncosnpQcFile(qcFile)
+knitr::kable(qcDf)
 ```
 
 Notice the renaming of some of the columns. This just faciliates downstream analyses as the default output column names are difficult to work with in R. We also load the OncoSNP CNV file and the PennCNV probe file.
@@ -29,20 +30,31 @@ Notice the renaming of some of the columns. This just faciliates downstream anal
 ```{r}
 # Loading the OncoSNP CNV file
 cnvFile <- system.file("extdata", "HCC1395.cnvs", package = "oncosnputils")
-cnvDt <- LoadOncosnpCnvFile(cnvFile)
+cnvDf <- LoadOncosnpCnvFile(cnvFile)
 
-# Show only first 10 rows and 8 columns for vignette purposes
-knitr::kable(head(cnvDt[, 1:10, with = FALSE], 10))
+# Show only first 10 rows and 10 columns for vignette purposes
+knitr::kable(cnvDf[1:10, 1:10])
 ```
 
 ```{r}
 # Loading the PennCNV probe file
 probeFile <- system.file("extdata", "logR_BAF.snp_probes.txt", package = "oncosnputils")
-probeDt <- LoadPennCNVProbeData(probeFile)
+probeDf <- LoadPennCNVProbeData(probeFile)
 
-# Show only first 10 rows and 8 columns for vignette purposes
-knitr::kable(head(probeDt, 10))
+# Show only first 10 rows for vignette purposes
+knitr::kable(probeDf[1:10, ])
 ```
 
-
 All these loading functions will return data.table objects. These are enhanced data.frames which are suitable for large data analysis.
+
+# Post-Processing OncoSNP Results
+***
+
+The oncosnputils R package provides several post-processing functions that will enhance the OncoSNP outputs. For instance, the standard output (.cnvs) from OncoSNP do not contain the LRR or BAF values of the segments. We can add this information to these files by using the `AddLRRBAF2OncosnpCNV` function:
+
+```{r}
+cnvDf.LRR.BAF <- AddLRRBAF2OncosnpCNV(cnvDf, qcDf, probeDf)
+```
+
+The qcDf and probeDf need to be passed in as input as we need to determine the LRR shift and also the overlapping probes wth each CNV segment.
+

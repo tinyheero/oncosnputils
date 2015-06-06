@@ -2,19 +2,22 @@
 title: "Introduction to oncosnputils"
 author: "Fong Chun Chan"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
+# Introduction
+
 This vignette introduces you to some core functionality in the oncosnputils R package. 
 
 The example data we are using in this package is from a [Affymetrix SNP 6.0 CEL file of the breast cancer cell-line HCC1395](ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM888nnn/GSM888107/suppl/GSM888107.CEL.gz). The raw CEL file was pre-processed through the PennCNV-Affy protocol and then run through OncoSNP (1.3) with only the SNP probes.
 
 # Loading Data
-***
 
 The oncosnputils R package provides several load functions for different input and output files of oncosnp. This functions rely on the data.table fread() function which relies for fast reading and then renames several columns so that they easier to work with in R. For instance, we can load the quality control file:
 
@@ -48,13 +51,26 @@ knitr::kable(probeDf[1:10, ])
 All these loading functions will return data.table objects. These are enhanced data.frames which are suitable for large data analysis.
 
 # Post-Processing OncoSNP Results
-***
 
-The oncosnputils R package provides several post-processing functions that will enhance the OncoSNP outputs. For instance, the standard output (.cnvs) from OncoSNP do not contain the LRR or BAF values of the segments. We can add this information to these files by using the `AddLRRBAF2OncosnpCNV` function:
+The oncosnputils R package provides several post-processing functions that will enhance the OncoSNP inputs/outputs. For instance, the standard output (.cnvs) from OncoSNP do not contain the LRR or BAF values of the segments. 
 
 ```{r}
-cnvDf.LRR.BAF <- AddLRRBAF2OncosnpCNV(cnvDf, qcDf, probeDf)
+head(cnvDf)
 ```
 
-The qcDf and probeDf need to be passed in as input as we need to determine the LRR shift and also the overlapping probes wth each CNV segment.
+We can add this information to these files by using the `AddLRRBAF2OncosnpCNV` function:
 
+```{r, message = FALSE}
+# only add for the first 10 segments for vignette purposes
+cnvDf.LRR.BAF <- AddLRRBAF2OncosnpCNV(cnvDf[1:10, ], qcDf, probeDf)
+```
+
+Now the LRR, BAF along with the number of probes in each segment have been added as additional columns to the `cnvDf` data.frame. The qcDf and probeDf need to be passed in as input as the functions needs to determine the LRR shift and also the overlapping probes wth each CNV segment.
+
+Also, the `AddOncosnp2PennCNVProbe` can add the OncoSNP segment state information to the PennCNV raw probe input into OncoSNP.
+
+```{r, message = FALSE}
+# only add for the first 5000 probes for vignette purposes
+probeDf.oncosnp <- AddOncosnp2PennCNVProbe(cnvDf, qcDf, probeDf[1:5000, ])
+head(probeDf.oncosnp)
+```

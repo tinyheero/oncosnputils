@@ -25,10 +25,6 @@ AddLRRBAF2OncosnpCNV <- function(cnvDt, qcDt, probeDt) {
   
   message("Adding LRR and BAF to each CNV segment")
   for (i in seq(nrow(cnvDt.LRR.BAF))) {
-    # display "." for each 10 iterations for progress bar
-    if (i %% 10L == 0) {
-      cat(".")
-    }
     cnv.chr <- as.character(cnvDt.LRR.BAF[i, "chr"])
     cnv.start <- as.integer(cnvDt.LRR.BAF[i, "start"])
     cnv.end <- as.integer(cnvDt.LRR.BAF[i, "end"])
@@ -65,5 +61,5 @@ AddLRRBAF2OncosnpCNV <- function(cnvDt, qcDt, probeDt) {
     cnvDt.LRR.BAF[i, "numProbes"] <- nrow(probeDt.sub.LRRShifted)
     cnvDt.LRR.BAF[i, "numSnpProbes"] <- nrow(probeDt.sub.LRRShifted.snpID)
   }
-  return(cnvDt.LRR.BAF)
+  cnvDt.LRR.BAF
 }

@@ -16,42 +16,34 @@
 #' @examples
 #' AddOncosnp2PennCNVProbe(..., ploidyConfig = 1)
 #' AddOncosnp2PennCNVProbe(..., ploidyConfig = 2)
-AddOncosnp2PennCNVProbe <- function(cnvDf, qcDf, probeDf, ploidyConfig = 1){
+AddOncosnp2PennCNVProbe <- function(cnvDf, qcDf, probeDf, ploidyConfig = 1L){
   LRR.shift <- dplyr::filter_(qcDf, ~ploidyNo == ploidyConfig)[, "LRRShift"]
   LRR.shift <- as.double(LRR.shift)
 
-  varval <- lazyeval::interp(~round(LRR + LRR.shift, 4))
-  probeDf.modified <- dplyr::mutate_(probeDf, 
-                                     .dots = setNames(list(varval), 
-                                                      "LRRShifted"))
-  probeDf.modified[, paste("rankState", 1:5, sep = "")] <- as.numeric(NA)
+  probeDf[, "LRRShifted"] <- round(probeDf$LRR + LRR.shift, 4L)
+  probeDf[, paste("rankState", 1:5, sep = "")] <- NA_integer_
 
   # Finding overlapping probes with each segment and adding shifted LRR
   # and ranks of the segment states
   message("Adding shifted LRR and ranks for each probe")
   cnvDf.sub <- dplyr::filter_(cnvDf, ~ploidyNum == ploidyConfig)
-  for (i in seq(nrow(cnvDf))) {
+  for (i in seq(nrow(cnvDf.sub))) {
     # display "." for each 10 iterations for progress bar
-    if (i %% 10 == 0) {
+    if (i %% 10L == 0) {
       cat(".")
     }
 
-    segChr <- as.character(cnvDf[i, "chr"])
-    segStart <- as.numeric(cnvDf[i, "start"])
-    segEnd <- as.numeric(cnvDf[i, "end"])
-    segRank <- as.numeric(cnvDf[i, "rank"])
-    segState <- as.numeric(cnvDf[i, "state"])
+    segChr <- as.character(cnvDf.sub[i, "chr"])
+    segStart <- as.integer(cnvDf.sub[i, "start"])
+    segEnd <- as.integer(cnvDf.sub[i, "end"])
+    segRank <- as.integer(cnvDf.sub[i, "rank"])
+    segState <- as.integer(cnvDf.sub[i, "state"])
     
     vars <- ~chr == segChr & pos >= segStart & pos <= segEnd
     overlappingProbes <- unlist(dplyr::filter_(probeDf.modified, vars)[, "probeID"])
-    varval <- lazyeval::interp(~ifelse(probeID %in% overlappingProbes, 
-                                       segState, 
-                                       NA))
-    probeDf.modified <- dplyr::mutate_(probeDf.modified,
-                                       .dots = setNames(list(varval), 
-                                                        paste("rankState", 
-                                                              segRank, 
-                                                              sep = "")))
+    probeDf.overlappingProbes.flag <- probeDf$probeID %in% overlappingProbes
+    probeDf[probeDf.overlappingProbes.flag, 
+            paste("rankState", segRank, sep = "")] <- segState
   }
-  return(probeDf.modified)
+  probeDf
 }

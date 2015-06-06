@@ -12,16 +12,16 @@ AddLRRBAF2OncosnpCNV <- function(cnvDt, qcDt, probeDt) {
   message("Getting LRR shift values for each ploidy")
 
   LRRShift.ploidyConfig1 <- dplyr::filter_(qcDt, ~ploidyNo == 1L)[, "LRRShift"]
-  LRRShift.ploidyConfig1 <- as.numeric(LRRShift.ploidyConfig1)
+  LRRShift.ploidyConfig1 <- as.double(LRRShift.ploidyConfig1)
   LRRShift.ploidyConfig2 <- dplyr::filter_(qcDt, ~ploidyNo == 2L)[, "LRRShift"]
-  LRRShift.ploidyConfig2 <- as.numeric(LRRShift.ploidyConfig2)
+  LRRShift.ploidyConfig2 <- as.double(LRRShift.ploidyConfig2)
 
   cnvDt.LRR.BAF <- cnvDt
-  cnvDt.LRR.BAF[, "LRR"] <- as.double(NA)
-  cnvDt.LRR.BAF[, "LRRShifted"] <- as.double(NA)
-  cnvDt.LRR.BAF[, "BAF"] <- as.double(NA)
-  cnvDt.LRR.BAF[, "numProbes"] <- as.integer(NA)
-  cnvDt.LRR.BAF[, "numSnpProbes"] <- as.integer(NA)
+  cnvDt.LRR.BAF[, "LRR"] <- NA_real_
+  cnvDt.LRR.BAF[, "LRRShifted"] <- NA_real_
+  cnvDt.LRR.BAF[, "BAF"] <- NA_real_
+  cnvDt.LRR.BAF[, "numProbes"] <- NA_integer_
+  cnvDt.LRR.BAF[, "numSnpProbes"] <- NA_integer_
   
   message("Adding LRR and BAF to each CNV segment")
   for (i in seq(nrow(cnvDt.LRR.BAF))) {
@@ -37,7 +37,7 @@ AddLRRBAF2OncosnpCNV <- function(cnvDt, qcDt, probeDt) {
     vars <- ~chr == cnv.chr & pos >= cnv.start & pos <= cnv.end
     probeDt.sub <- dplyr::filter_(probeDt, vars)[, c("probeID", "LRR", "BAF")]
 
-    probeDt.sub.LRRShifted <- dplyr::mutate(probeDt.sub, LRRShifted = NA)
+    probeDt.sub.LRRShifted <- dplyr::mutate(probeDt.sub, LRRShifted = NA_real_)
     varname <- "LRRShifted"
     if (cnv.ploidyConfig == 1L) {
       varval <- lazyeval::interp(~LRR + shift, shift = LRRShift.ploidyConfig1)

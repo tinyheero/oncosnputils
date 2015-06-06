@@ -6,12 +6,16 @@
 #'        LoadOncosnpQcFile() function.
 #' @param probeDt The PennCNV probe data file data.table loaded using the 
 #'        LoadPennCNVProbeData() function.
-#' @return A modified data.table of the cnvDt that contains extra columns for
+#' @return A modified data.frame of the cnvDt that contains extra columns for
 #'         LRR, LRRShifted, BAF, etc.
 AddLRRBAF2OncosnpCNV <- function(cnvDt, qcDt, probeDt) {
   message("Getting LRR shift values for each ploidy")
-  LRRShift.ploidyConfig1 <- qcDt[ploidyNo == 1L, "LRRShift", with = FALSE]
-  LRRShift.ploidyConfig2 <- qcDt[ploidyNo == 2L, "LRRShift", with = FALSE]
+
+  LRRShift.ploidyConfig1 <- dplyr::filter_(qcDt, ~ploidyNo == 1L)[, "LRRShift"]
+  LRRShift.ploidyConfig1 <- as.numeric(LRRShift.ploidyConfig1)
+  LRRShift.ploidyConfig2 <- dplyr::filter_(qcDt, ~ploidyNo == 2L)[, "LRRShift"]
+  LRRShift.ploidyConfig2 <- as.numeric(LRRShift.ploidyConfig2)
+
   cnvDt.LRR.BAF <- dplyr::mutate(cnvDt, 
                                  LRR = as.double(NA), 
                                  LRRShifted = as.double(NA),
@@ -22,33 +26,44 @@ AddLRRBAF2OncosnpCNV <- function(cnvDt, qcDt, probeDt) {
   message("Adding LRR and BAF to each CNV segment")
   for (i in seq(nrow(cnvDt.LRR.BAF))) {
     # display "." for each 10 iterations for progress bar
-    if (i %% 10 == 0) {
+    if (i %% 10L == 0) {
       cat(".")
     }
-    cnv.chr <- cnvDt.LRR.BAF[i, "chr", with = FALSE]
-    cnv.start <- cnvDt.LRR.BAF[i, "start", with = FALSE]
-    cnv.end <- cnvDt.LRR.BAF[i, "end", with = FALSE]
-    cnv.ploidyConfig <- cnvDt.LRR.BAF[i, "ploidyNum", with = FALSE]
+    cnv.chr <- as.character(cnvDt.LRR.BAF[i, "chr"])
+    cnv.start <- as.numeric(cnvDt.LRR.BAF[i, "start"])
+    cnv.end <- as.numeric(cnvDt.LRR.BAF[i, "end"])
+    cnv.ploidyConfig <- as.numeric(cnvDt.LRR.BAF[i, "ploidyNum"])
 
-    probeDt.sub <- probeDt[chr == cnv.chr & pos >= cnv.start & pos <= cnv.end, 
-                           c("probeID", "LRR", "BAF"), with = FALSE]
+    vars <- ~chr == cnv.chr & pos >= cnv.start & pos <= cnv.end
+    probeDt.sub <- dplyr::filter_(probeDt, vars)[, c("probeID", "LRR", "BAF")]
 
     probeDt.sub.LRRShifted <- dplyr::mutate(probeDt.sub, LRRShifted = NA)
-    if (cnv.ploidyConfig == 1) {
-      probeDt.sub.LRRShifted[, LRRShifted := LRR + LRRShift.ploidyConfig1]
+    varname <- "LRRShifted"
+    if (cnv.ploidyConfig == 1L) {
+      varval <- lazyeval::interp(~LRR + shift, shift = LRRShift.ploidyConfig1)
+      probeDt.sub.LRRShifted <- dplyr::mutate_(probeDt.sub, 
+                                               .dots = setNames(list(varval), 
+                                                                varname))
     } else {
-      probeDt.sub.LRRShifted[, LRRShifted := LRR + LRRShift.ploidyConfig2]
+      varval <- lazyeval::interp(~LRR + shift, shift = LRRShift.ploidyConfig2)
+      probeDt.sub.LRRShifted <- dplyr::mutate_(probeDt.sub, 
+                                               .dots = setNames(list(varval), 
+                                                                varname))
     }
 
     # calculate BAF of segment using only SNP probes
-    probeDt.sub.LRRShifted.snpID <- probeDt.sub.LRRShifted[grep("^SNP", probeID), ]
-    cnvDt.LRR.BAF[i, BAF := round(mean(probeDt.sub.LRRShifted.snpID[, BAF]), 3)]
+    probeDt.sub.LRRShifted.snpID <- dplyr::filter_(probeDt.sub.LRRShifted, 
+                                                   ~grepl("^SNP", probeID))
+    cnvDt.LRR.BAF[i, "BAF"] <- dplyr::summarise_(probeDt.sub.LRRShifted.snpID,
+                                                 ~round(mean(BAF), 3L))
 
     # add additional segment information
-    cnvDt.LRR.BAF[i, LRR := round(mean(probeDt.sub.LRRShifted[, LRR]), 3)]
-    cnvDt.LRR.BAF[i, LRRShifted := round(mean(probeDt.sub.LRRShifted[, LRRShifted]), 3)]
-    cnvDt.LRR.BAF[i, numProbes := nrow(probeDt.sub)]
-    cnvDt.LRR.BAF[i, numSnpProbes := nrow(probeDt.sub.LRRShifted.snpID)]
+    cnvDt.LRR.BAF[i, "LRR"] <- dplyr::summarise_(probeDt.sub.LRRShifted, 
+                                          ~round(mean(LRR), 3L))
+    cnvDt.LRR.BAF[i, "LRRShifted"] <- dplyr::summarise_(probeDt.sub.LRRShifted,
+                                                 ~round(mean(LRRShifted), 3L))
+    cnvDt.LRR.BAF[i, "numProbes"] <- nrow(probeDt.sub.LRRShifted)
+    cnvDt.LRR.BAF[i, "numSnpProbes"] <- nrow(probeDt.sub.LRRShifted.snpID)
   }
   return(cnvDt.LRR.BAF)
 }

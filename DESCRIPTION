@@ -8,7 +8,7 @@ Description: This package post-processes the output of OncoSNP and provides
 Depends: R (>= 3.1.2)
 Imports: 
 	dplyr (>= 0.4.1),
-	data.table (>= 1.9.4)
+	readr (>= 0.1.1)
 License: MIT
 LazyData: true
 Suggests: knitr

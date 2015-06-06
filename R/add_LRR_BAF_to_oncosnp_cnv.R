@@ -16,12 +16,12 @@ AddLRRBAF2OncosnpCNV <- function(cnvDt, qcDt, probeDt) {
   LRRShift.ploidyConfig2 <- dplyr::filter_(qcDt, ~ploidyNo == 2L)[, "LRRShift"]
   LRRShift.ploidyConfig2 <- as.numeric(LRRShift.ploidyConfig2)
 
-  cnvDt.LRR.BAF <- dplyr::mutate(cnvDt, 
-                                 LRR = as.double(NA), 
-                                 LRRShifted = as.double(NA),
-                                 BAF = as.double(NA), 
-                                 numProbes = as.numeric(NA), 
-                                 numSnpProbes = as.numeric(NA))
+  cnvDt.LRR.BAF <- cnvDt
+  cnvDt.LRR.BAF[, "LRR"] <- as.double(NA)
+  cnvDt.LRR.BAF[, "LRRShifted"] <- as.double(NA)
+  cnvDt.LRR.BAF[, "BAF"] <- as.double(NA)
+  cnvDt.LRR.BAF[, "numProbes"] <- as.integer(NA)
+  cnvDt.LRR.BAF[, "numSnpProbes"] <- as.integer(NA)
   
   message("Adding LRR and BAF to each CNV segment")
   for (i in seq(nrow(cnvDt.LRR.BAF))) {
@@ -30,9 +30,9 @@ AddLRRBAF2OncosnpCNV <- function(cnvDt, qcDt, probeDt) {
       cat(".")
     }
     cnv.chr <- as.character(cnvDt.LRR.BAF[i, "chr"])
-    cnv.start <- as.numeric(cnvDt.LRR.BAF[i, "start"])
-    cnv.end <- as.numeric(cnvDt.LRR.BAF[i, "end"])
-    cnv.ploidyConfig <- as.numeric(cnvDt.LRR.BAF[i, "ploidyNum"])
+    cnv.start <- as.integer(cnvDt.LRR.BAF[i, "start"])
+    cnv.end <- as.integer(cnvDt.LRR.BAF[i, "end"])
+    cnv.ploidyConfig <- as.integer(cnvDt.LRR.BAF[i, "ploidyNum"])
 
     vars <- ~chr == cnv.chr & pos >= cnv.start & pos <= cnv.end
     probeDt.sub <- dplyr::filter_(probeDt, vars)[, c("probeID", "LRR", "BAF")]

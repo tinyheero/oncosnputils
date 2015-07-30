@@ -11,8 +11,8 @@ install_github("tinyheero/oncosnputils")
 The oncosnputils R package main purposes is to supplement some of the output data from OncoSNP. To see the full list of exported functions:
 
 ```r
-library("survutils")
-ls("package/survutils")
+library("oncosnputils")
+ls("package/oncosnputils")
 ```
 
 For instance, the function `add_LRR_BAF_to_oncosnp_cnv` functions will add Log R Ratio (LRR) and B-allele frequeny (BAF) information to each CNV segment in the OncoSNP \*.cnvs file. Additionally, the `add_oncosnp_to_penncnv_probe` adds OncoSNP state information to the raw probe data from the PennCNV-Affy protocol. This is useful for plotting the LRR and BAF plots when you want to add colors to the probes.

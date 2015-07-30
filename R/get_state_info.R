@@ -6,6 +6,7 @@
 #' @param state.type The "state" level.
 #' @return A list with names corresponding to various details "categories" of
 #'   state information
+#' @export 
 get_state_info <- function(state.type = "CLL") {
   if (state.type == "CLL"){
     states <- list( 

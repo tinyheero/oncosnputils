@@ -4,27 +4,27 @@
 \alias{AddOncosnp2PennCNVProbe}
 \title{Add the OncoSNP information to the PennCNV probe data.}
 \usage{
-AddOncosnp2PennCNVProbe(cnvDt, qcDt, probeDt, ploidyConfig = 1)
+AddOncosnp2PennCNVProbe(cnvDf, qcDf, probeDf, ploidyConfig = 1L)
 }
 \arguments{
-\item{cnvDt}{The OncoSNP standard file (.cnvs) data.table loaded using the
+\item{cnvDf}{The OncoSNP standard file (.cnvs) data.frame loaded using the
 loadOncosnpCnvFile() function.}
 
-\item{qcDt}{The OncoSNP quality control (.qc) data.table loaded using the
+\item{qcDf}{The OncoSNP quality control (.qc) data.frame loaded using the
 LoadOncosnpQcFile() function.}
 
-\item{probeDt}{The PennCNV probe data file data.table loaded using the
-paramDescriptionLoadPennCNVProbeData() function.}
+\item{probeDf}{The PennCNV probe data file data.frame loaded using the
+LoadPennCNVProbeData() function.}
 
 \item{ploidyConfig}{The ploidy configuration from OncoSNP that you want to
 to map the information to.}
 }
 \value{
-A modified data.table of the probeDt that contains extra columns for
+A modified data.frame of the probeDf that contains extra columns for
    shifted LRR and ranks from OncoSNP
 }
 \description{
-Each probe will have it's LRR value shifted and assigned a rank
+Each probe will have its LRR value shifted and assigned a rank
 (or multiple) according to the output of OncoSNP
 }
 \examples{

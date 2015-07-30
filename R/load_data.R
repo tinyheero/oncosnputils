@@ -43,6 +43,7 @@ load_oncosnp_cnv_file <- function(cnvFile, version = c("1.3.0")) {
 #' 
 #' @param probeFile The PennCNV probe file
 #' @return A data.table of the probe file
+#' @export
 load_penncnv_probe_data <- function(probeFile){
   probeDt <- data.table::fread(probeFile, colClasses = c("Chr" = "character"))
   data.table::setnames(probeDt,

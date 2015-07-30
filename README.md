@@ -8,7 +8,9 @@ install_github("tinyheero/oncosnputils")
 
 # Overview
 
-The oncosnputils R package main purposes is to supplement some of the output data from OncoSNP. To see the full list of exported functions:
+The oncosnputils R package main purposes is to supplement some of the output data from OncoSNP. An introduction [vignette](http://htmlpreview.github.io/?https://github.com/tinyheero/oncosnputils/blob/master/vignettes/introduction.html) has been written to describe how to use the R package. 
+
+To see the full list of exported functions:
 
 ```r
 library("oncosnputils")

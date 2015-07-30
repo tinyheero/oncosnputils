@@ -74,7 +74,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="loading-data" class="section level1">
 <h1>Loading Data</h1>
 <hr />
-<p>The oncosnputils R package provides several load functions for different input and output files of oncosnp. This functions rely on the <code>data.table::fread()</code> function which relies for fast reading and then renames several columns so that they easier to work with in R. For instance, we can load the quality control file:</p>
+<p>The oncosnputils R package provides several load functions for different input and output files of oncosnp. This functions rely on the <code>data.table::fread</code> function which relies for fast reading and then renames several columns so that they easier to work with in R. For instance, we can load the quality control file:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;oncosnputils&quot;</span>)
 <span class="kw">library</span>(<span class="st">&quot;knitr&quot;</span>)
 qc.file &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;HCC1395.qc&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;oncosnputils&quot;</span>)

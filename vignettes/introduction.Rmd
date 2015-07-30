@@ -21,7 +21,7 @@ The example data we are using in this package is from a [Affymetrix SNP 6.0 CEL 
 # Loading Data
 ***
 
-The oncosnputils R package provides several load functions for different input and output files of oncosnp. This functions rely on the `data.table::fread()` function which relies for fast reading and then renames several columns so that they easier to work with in R. For instance, we can load the quality control file:
+The oncosnputils R package provides several load functions for different input and output files of oncosnp. This functions rely on the `data.table::fread` function which relies for fast reading and then renames several columns so that they easier to work with in R. For instance, we can load the quality control file:
 
 ```{r}
 library("oncosnputils")

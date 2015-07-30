@@ -28,11 +28,6 @@ AddOncosnp2PennCNVProbe <- function(cnvDf, qcDf, probeDf, ploidyConfig = 1L){
   message("Adding shifted LRR and ranks for each probe")
   cnvDf.sub <- dplyr::filter_(cnvDf, ~ploidyNum == ploidyConfig)
   for (i in seq(nrow(cnvDf.sub))) {
-    # display "." for each 10 iterations for progress bar
-    if (i %% 10L == 0) {
-      cat(".")
-    }
-
     segChr <- as.character(cnvDf.sub[i, "chr"])
     segStart <- as.integer(cnvDf.sub[i, "start"])
     segEnd <- as.integer(cnvDf.sub[i, "end"])
@@ -40,7 +35,7 @@ AddOncosnp2PennCNVProbe <- function(cnvDf, qcDf, probeDf, ploidyConfig = 1L){
     segState <- as.integer(cnvDf.sub[i, "state"])
     
     vars <- ~chr == segChr & pos >= segStart & pos <= segEnd
-    overlappingProbes <- unlist(dplyr::filter_(probeDf.modified, vars)[, "probeID"])
+    overlappingProbes <- unlist(dplyr::filter_(probeDf, vars)[, "probeID"])
     probeDf.overlappingProbes.flag <- probeDf$probeID %in% overlappingProbes
     probeDf[probeDf.overlappingProbes.flag, 
             paste("rankState", segRank, sep = "")] <- segState

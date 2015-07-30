@@ -5,9 +5,7 @@
 #' @return A data.frame of the quality control file that has its columns 
 #'         renamed to be programmer-friendly to use.
 #' @export
-#' @examples
-#' LoadOncoSnpQcFile()
-LoadOncosnpQcFile <- function(qcFile) {
+load_oncosnp_qc_file <- function(qcFile) {
   inDt <- data.table::fread(qcFile)
   data.table::setnames(inDt, 
                        colnames(inDt), 
@@ -23,9 +21,7 @@ LoadOncosnpQcFile <- function(qcFile) {
 #' @return A data.table of the standard output file (.cnvs) that has its columns 
 #'         renamed to be programmer-friendly to use
 #' @export
-#' @examples
-#' LoadOncosnpCnvFile()
-LoadOncosnpCnvFile <- function(cnvFile, version = c("1.3.0")) {
+load_oncosnp_cnv_file <- function(cnvFile, version = c("1.3.0")) {
   cnvDt <- data.table::fread(cnvFile)
 
 #   if (version == "1.2"){
@@ -47,7 +43,7 @@ LoadOncosnpCnvFile <- function(cnvFile, version = c("1.3.0")) {
 #' 
 #' @param probeFile The PennCNV probe file
 #' @return A data.table of the probe file
-LoadPennCNVProbeData <- function(probeFile){
+load_penncnv_probe_data <- function(probeFile){
   probeDt <- data.table::fread(probeFile, colClasses = c("Chr" = "character"))
   data.table::setnames(probeDt,
                        colnames(probeDt),

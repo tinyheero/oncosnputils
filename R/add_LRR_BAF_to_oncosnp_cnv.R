@@ -9,7 +9,7 @@
 #' @return A modified data.frame of the cnvDt that contains extra columns for
 #'         LRR, LRRShifted, BAF, etc.
 #' @export
-AddLRRBAF2OncosnpCNV <- function(cnvDt, qcDt, probeDt) {
+add_LRR_BAF_to_oncosnp_cnv <- function(cnvDt, qcDt, probeDt) {
   message("Getting LRR shift values for each ploidy")
 
   LRRShift.ploidyConfig1 <- dplyr::filter_(qcDt, ~ploidyNo == 1L)[, "LRRShift"]

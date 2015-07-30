@@ -8,6 +8,7 @@
 #'        LoadPennCNVProbeData() function.
 #' @return A modified data.frame of the cnvDt that contains extra columns for
 #'         LRR, LRRShifted, BAF, etc.
+#' @export
 AddLRRBAF2OncosnpCNV <- function(cnvDt, qcDt, probeDt) {
   message("Getting LRR shift values for each ploidy")
 

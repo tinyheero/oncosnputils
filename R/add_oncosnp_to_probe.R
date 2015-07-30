@@ -13,6 +13,7 @@
 #'    to map the information to.
 #' @return A modified data.frame of the probeDf that contains extra columns for
 #'    shifted LRR and ranks from OncoSNP
+#' @export
 #' @examples
 #' AddOncosnp2PennCNVProbe(..., ploidyConfig = 1)
 #' AddOncosnp2PennCNVProbe(..., ploidyConfig = 2)

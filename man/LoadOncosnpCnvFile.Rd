@@ -11,7 +11,7 @@ LoadOncosnpCnvFile(cnvFile, version = c("1.3.0"))
 }
 \value{
 A data.table of the standard output file (.cnvs) that has its columns
-				 renamed to be programmer-friendly to use
+        renamed to be programmer-friendly to use
 }
 \description{
 Load the OncoSNP CNV file (.cnv).

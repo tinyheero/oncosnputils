@@ -18,4 +18,4 @@ Also, several loading functions are provided:
 * load_oncosnp_cnv_file
 * load_penncnv_probe_data
 
-These provide quick and easy loading (thanks to readr) of these tabular OncoSNP output files and PennCNV probe data. Also, the column names will be renamed to help faciliate downstream R analyses.
+These provide quick and easy loading (thanks to data.table::fread) of these tabular OncoSNP output files and PennCNV probe data. Also, the column names will be renamed to help faciliate downstream R analyses.

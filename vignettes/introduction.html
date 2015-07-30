@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Fong Chun Chan" />
+
+<meta name="date" content="2015-07-30" />
+
+<title>Introduction to oncosnputils</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link href="data:text/css,body%20%7B%0A%20%20background%2Dcolor%3A%20%23fff%3B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20max%2Dwidth%3A%20700px%3B%0A%20%20overflow%3A%20visible%3B%0A%20%20padding%2Dleft%3A%202em%3B%0A%20%20padding%2Dright%3A%202em%3B%0A%20%20font%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0A%20%20font%2Dsize%3A%2014px%3B%0A%20%20line%2Dheight%3A%201%2E35%3B%0A%7D%0A%0A%23header%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0A%0A%23TOC%20%7B%0A%20%20clear%3A%20both%3B%0A%20%20margin%3A%200%200%2010px%2010px%3B%0A%20%20padding%3A%204px%3B%0A%20%20width%3A%20400px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20border%2Dradius%3A%205px%3B%0A%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20font%2Dsize%3A%2013px%3B%0A%20%20line%2Dheight%3A%201%2E3%3B%0A%7D%0A%20%20%23TOC%20%2Etoctitle%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20font%2Dsize%3A%2015px%3B%0A%20%20%20%20margin%2Dleft%3A%205px%3B%0A%20%20%7D%0A%0A%20%20%23TOC%20ul%20%7B%0A%20%20%20%20padding%2Dleft%3A%2040px%3B%0A%20%20%20%20margin%2Dleft%3A%20%2D1%2E5em%3B%0A%20%20%20%20margin%2Dtop%3A%205px%3B%0A%20%20%20%20margin%2Dbottom%3A%205px%3B%0A%20%20%7D%0A%20%20%23TOC%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dleft%3A%20%2D2em%3B%0A%20%20%7D%0A%20%20%23TOC%20li%20%7B%0A%20%20%20%20line%2Dheight%3A%2016px%3B%0A%20%20%7D%0A%0Atable%20%7B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dcolor%3A%20%23DDDDDD%3B%0A%20%20border%2Dstyle%3A%20outset%3B%0A%20%20border%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0A%20%20border%2Dwidth%3A%202px%3B%0A%20%20padding%3A%205px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%20%20line%2Dheight%3A%2018px%3B%0A%20%20padding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0A%20%20border%2Dleft%2Dstyle%3A%20none%3B%0A%20%20border%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Ap%20%7B%0A%20%20margin%3A%200%2E5em%200%3B%0A%7D%0A%0Ablockquote%20%7B%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20padding%3A%200%2E25em%200%2E75em%3B%0A%7D%0A%0Ahr%20%7B%0A%20%20border%2Dstyle%3A%20solid%3B%0A%20%20border%3A%20none%3B%0A%20%20border%2Dtop%3A%201px%20solid%20%23777%3B%0A%20%20margin%3A%2028px%200%3B%0A%7D%0A%0Adl%20%7B%0A%20%20margin%2Dleft%3A%200%3B%0A%7D%0A%20%20dl%20dd%20%7B%0A%20%20%20%20margin%2Dbottom%3A%2013px%3B%0A%20%20%20%20margin%2Dleft%3A%2013px%3B%0A%20%20%7D%0A%20%20dl%20dt%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%7D%0A%0Aul%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%20%20ul%20li%20%7B%0A%20%20%20%20list%2Dstyle%3A%20circle%20outside%3B%0A%20%20%7D%0A%20%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dbottom%3A%200%3B%0A%20%20%7D%0A%0Apre%2C%20code%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20color%3A%20%23333%3B%0A%7D%0Apre%20%7B%0A%20%20white%2Dspace%3A%20pre%2Dwrap%3B%20%20%20%20%2F%2A%20Wrap%20long%20lines%20%2A%2F%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20margin%3A%205px%200px%2010px%200px%3B%0A%20%20padding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Acode%20%7B%0A%20%20font%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0A%20%20font%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0A%20%20padding%3A%202px%200px%3B%0A%7D%0A%0Adiv%2Efigure%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0A%20%20background%2Dcolor%3A%20%23FFFFFF%3B%0A%20%20padding%3A%202px%3B%0A%20%20border%3A%201px%20solid%20%23DDDDDD%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20margin%3A%200%205px%3B%0A%7D%0A%0Ah1%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%20%20font%2Dsize%3A%2035px%3B%0A%20%20line%2Dheight%3A%2040px%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20border%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20padding%2Dbottom%3A%202px%3B%0A%20%20font%2Dsize%3A%20145%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20border%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20font%2Dsize%3A%20120%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0A%20%20margin%2Dleft%3A%208px%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Ah5%2C%20h6%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23ccc%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Aa%20%7B%0A%20%20color%3A%20%230033dd%3B%0A%20%20text%2Ddecoration%3A%20none%3B%0A%7D%0A%20%20a%3Ahover%20%7B%0A%20%20%20%20color%3A%20%236666ff%3B%20%7D%0A%20%20a%3Avisited%20%7B%0A%20%20%20%20color%3A%20%23800080%3B%20%7D%0A%20%20a%3Avisited%3Ahover%20%7B%0A%20%20%20%20color%3A%20%23BB00BB%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%0A%2F%2A%20Class%20described%20in%20https%3A%2F%2Fbenjeffrey%2Ecom%2Fposts%2Fpandoc%2Dsyntax%2Dhighlighting%2Dcss%0A%20%20%20Colours%20from%20https%3A%2F%2Fgist%2Egithub%2Ecom%2Frobsimmons%2F1172277%20%2A%2F%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Keyword%20%2A%2F%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%2F%2A%20DataType%20%2A%2F%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%2F%2A%20DecVal%20%28decimal%20values%29%20%2A%2F%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20BaseN%20%2A%2F%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Float%20%2A%2F%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Char%20%2A%2F%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20String%20%2A%2F%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%2F%2A%20Comment%20%2A%2F%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%2F%2A%20OtherToken%20%2A%2F%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20AlertToken%20%2A%2F%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Function%20calls%20%2A%2F%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%2F%2A%20ErrorTok%20%2A%2F%0A%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div id="header">
+<h1 class="title">Introduction to oncosnputils</h1>
+<h4 class="author"><em>Fong Chun Chan</em></h4>
+<h4 class="date"><em>2015-07-30</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#loading-data">Loading Data</a></li>
+<li><a href="#post-processing-oncosnp-results">Post-Processing OncoSNP Results</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<hr />
+<p>This vignette introduces you to some core functionality in the oncosnputils R package.</p>
+<p>The example data we are using in this package is from a <a href="ftp://ftp.ncbi.nlm.nih.gov/geo/samples/GSM888nnn/GSM888107/suppl/GSM888107.CEL.gz">Affymetrix SNP 6.0 CEL file of the breast cancer cell-line HCC1395</a>. The raw CEL file was pre-processed through the PennCNV-Affy protocol and then run through OncoSNP (1.3) with only the SNP probes.</p>
+</div>
+<div id="loading-data" class="section level1">
+<h1>Loading Data</h1>
+<hr />
+<p>The oncosnputils R package provides several load functions for different input and output files of oncosnp. This functions rely on the <code>data.table::fread()</code> function which relies for fast reading and then renames several columns so that they easier to work with in R. For instance, we can load the quality control file:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;oncosnputils&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;knitr&quot;</span>)
+qc.file &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;HCC1395.qc&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;oncosnputils&quot;</span>)
+qc.df &lt;-<span class="st"> </span><span class="kw">load_oncosnp_qc_file</span>(qc.file)
+<span class="kw">kable</span>(qc.df)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">LRRShift</th>
+<th align="right">normalContent</th>
+<th align="right">copyNum</th>
+<th align="right">logLikelihood</th>
+<th align="right">outlierRate</th>
+<th align="right">LRRStd</th>
+<th align="right">BAFStd</th>
+<th align="right">ploidyNo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">-0.186</td>
+<td align="right">0</td>
+<td align="right">2.9</td>
+<td align="right">390070.0</td>
+<td align="right">0</td>
+<td align="right">0.238</td>
+<td align="right">0.041</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">-0.171</td>
+<td align="right">0</td>
+<td align="right">2.9</td>
+<td align="right">389991.3</td>
+<td align="right">0</td>
+<td align="right">0.238</td>
+<td align="right">0.041</td>
+<td align="right">2</td>
+</tr>
+</tbody>
+</table>
+<p>Notice the renaming of some of the columns. This just faciliates downstream analyses as the default output column names are difficult to work with in R. We also load the OncoSNP CNV file and the PennCNV probe file.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Loading the OncoSNP CNV file</span>
+cnv.file &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;HCC1395.cnvs&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;oncosnputils&quot;</span>)
+cnv.df &lt;-<span class="st"> </span><span class="kw">load_oncosnp_cnv_file</span>(cnv.file)
+
+<span class="co"># Show only first 10 rows and 10 columns for vignette purposes</span>
+<span class="kw">kable</span>(cnv.df[<span class="dv">1</span>:<span class="dv">10</span>, <span class="dv">1</span>:<span class="dv">10</span>])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">chr</th>
+<th align="right">start</th>
+<th align="right">end</th>
+<th align="right">copyNum</th>
+<th align="right">loh</th>
+<th align="right">rank</th>
+<th align="right">logLik</th>
+<th align="right">numMarkers</th>
+<th align="right">normFrac</th>
+<th align="right">state</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">564621</td>
+<td align="right">9556061</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">8678.955</td>
+<td align="right">2613</td>
+<td align="right">0</td>
+<td align="right">21</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">9559063</td>
+<td align="right">52569002</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">67181.639</td>
+<td align="right">11493</td>
+<td align="right">0</td>
+<td align="right">22</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">52570187</td>
+<td align="right">84903286</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">29552.689</td>
+<td align="right">11363</td>
+<td align="right">0</td>
+<td align="right">21</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">84915300</td>
+<td align="right">96462717</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">31228.587</td>
+<td align="right">3755</td>
+<td align="right">0</td>
+<td align="right">23</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">96471975</td>
+<td align="right">118214719</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">22885.849</td>
+<td align="right">6796</td>
+<td align="right">0</td>
+<td align="right">21</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">118221142</td>
+<td align="right">121290234</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4775.368</td>
+<td align="right">747</td>
+<td align="right">0</td>
+<td align="right">6</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">142568480</td>
+<td align="right">249198164</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">133448.374</td>
+<td align="right">35155</td>
+<td align="right">0</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">15703</td>
+<td align="right">10308959</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">17578.116</td>
+<td align="right">4349</td>
+<td align="right">0</td>
+<td align="right">22</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">10314421</td>
+<td align="right">45167570</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">60804.261</td>
+<td align="right">12847</td>
+<td align="right">0</td>
+<td align="right">21</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">45167886</td>
+<td align="right">63845066</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9380.960</td>
+<td align="right">6489</td>
+<td align="right">0</td>
+<td align="right">4</td>
+</tr>
+</tbody>
+</table>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Loading the PennCNV probe file</span>
+probe.file &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;logR_BAF.snp_probes.txt&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;oncosnputils&quot;</span>)
+probe.df &lt;-<span class="st"> </span><span class="kw">load_penncnv_probe_data</span>(probe.file)</code></pre>
+<pre><code>## 
+Read 53.5% of 916285 rows
+Read 72.0% of 916285 rows
+Read 93.9% of 916285 rows
+Read 916285 rows and 5 (of 5) columns from 0.034 GB file in 00:00:05</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Show only first 10 rows for vignette purposes</span>
+<span class="kw">kable</span>(probe.df[<span class="dv">1</span>:<span class="dv">10</span>, ])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">probeID</th>
+<th align="left">chr</th>
+<th align="right">pos</th>
+<th align="right">LRR</th>
+<th align="right">BAF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">SNP_A-2131660</td>
+<td align="left">1</td>
+<td align="right">1156131</td>
+<td align="right">-0.2568</td>
+<td align="right">0.0839</td>
+</tr>
+<tr class="even">
+<td align="left">SNP_A-1967418</td>
+<td align="left">1</td>
+<td align="right">2234251</td>
+<td align="right">0.1412</td>
+<td align="right">1.0000</td>
+</tr>
+<tr class="odd">
+<td align="left">SNP_A-1969580</td>
+<td align="left">1</td>
+<td align="right">2329564</td>
+<td align="right">-0.3014</td>
+<td align="right">0.9117</td>
+</tr>
+<tr class="even">
+<td align="left">SNP_A-4263484</td>
+<td align="left">1</td>
+<td align="right">2553624</td>
+<td align="right">-0.2396</td>
+<td align="right">0.9760</td>
+</tr>
+<tr class="odd">
+<td align="left">SNP_A-1978185</td>
+<td align="left">1</td>
+<td align="right">2936870</td>
+<td align="right">-0.2402</td>
+<td align="right">0.0618</td>
+</tr>
+<tr class="even">
+<td align="left">SNP_A-4264431</td>
+<td align="left">1</td>
+<td align="right">2951834</td>
+<td align="right">-0.1151</td>
+<td align="right">0.0293</td>
+</tr>
+<tr class="odd">
+<td align="left">SNP_A-1980898</td>
+<td align="left">1</td>
+<td align="right">3095126</td>
+<td align="right">0.1865</td>
+<td align="right">1.0000</td>
+</tr>
+<tr class="even">
+<td align="left">SNP_A-1983139</td>
+<td align="left">1</td>
+<td align="right">3165267</td>
+<td align="right">-0.5020</td>
+<td align="right">0.1263</td>
+</tr>
+<tr class="odd">
+<td align="left">SNP_A-4265735</td>
+<td align="left">1</td>
+<td align="right">3302871</td>
+<td align="right">-0.1964</td>
+<td align="right">0.0665</td>
+</tr>
+<tr class="even">
+<td align="left">SNP_A-1995832</td>
+<td align="left">1</td>
+<td align="right">3705226</td>
+<td align="right">0.0628</td>
+<td align="right">0.0000</td>
+</tr>
+</tbody>
+</table>
+<p>All these loading functions will return data.table objects. These are enhanced data.frames which are suitable for large data analysis.</p>
+</div>
+<div id="post-processing-oncosnp-results" class="section level1">
+<h1>Post-Processing OncoSNP Results</h1>
+<hr />
+<p>The oncosnputils R package provides several post-processing functions that will enhance the OncoSNP inputs/outputs. For instance, the standard output (.cnvs) from OncoSNP do not contain the LRR or BAF values of the segments.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(cnv.df)</code></pre>
+<pre><code>## Source: local data frame [6 x 13]
+## 
+##   chr     start       end copyNum loh rank    logLik numMarkers normFrac
+## 1   1    564621   9556061       2   2    1  8678.955       2613        0
+## 2   1   9559063  52569002       3   2    1 67181.639      11493        0
+## 3   1  52570187  84903286       2   2    1 29552.689      11363        0
+## 4   1  84915300  96462717       4   2    1 31228.587       3755        0
+## 5   1  96471975 118214719       2   2    1 22885.849       6796        0
+## 6   1 118221142 121290234       4   0    1  4775.368        747        0
+## Variables not shown: state (int), ploidyNum (int), majorCopyNumber (int),
+##   minorCopyNumber (int)</code></pre>
+<p>We can add this information to these files by using the <code>add_LRR_BAF_to_oncosnp_cnv</code> function:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># only add for the first 10 segments for vignette purposes</span>
+cnv.df.LRR.BAF &lt;-<span class="st"> </span><span class="kw">add_LRR_BAF_to_oncosnp_cnv</span>(cnv.df[<span class="dv">1</span>:<span class="dv">10</span>, ], qc.df, probe.df)</code></pre>
+<p>Now the LRR, BAF along with the number of probes in each segment have been added as additional columns to the <code>cnv.df</code> data.frame. The qc.df and probe.df need to be passed in as input as the functions needs to determine the LRR shift and also the overlapping probes wth each CNV segment.</p>
+<p>Also, the <code>add_oncosnp_to_penncnv_probe</code> can add the OncoSNP segment state information to the PennCNV raw probe input into OncoSNP.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># only add for the first 5000 probes for vignette purposes</span>
+probe.df.oncosnp &lt;-<span class="st"> </span><span class="kw">add_oncosnp_to_penncnv_probe</span>(cnv.df, qc.df, probe.df[<span class="dv">1</span>:<span class="dv">5000</span>, ])
+<span class="kw">head</span>(probe.df.oncosnp)</code></pre>
+<pre><code>## Source: local data frame [6 x 11]
+## 
+##         probeID chr     pos     LRR    BAF LRRShifted rankState1
+## 1 SNP_A-2131660   1 1156131 -0.2568 0.0839    -0.4428         21
+## 2 SNP_A-1967418   1 2234251  0.1412 1.0000    -0.0448         21
+## 3 SNP_A-1969580   1 2329564 -0.3014 0.9117    -0.4874         21
+## 4 SNP_A-4263484   1 2553624 -0.2396 0.9760    -0.4256         21
+## 5 SNP_A-1978185   1 2936870 -0.2402 0.0618    -0.4262         21
+## 6 SNP_A-4264431   1 2951834 -0.1151 0.0293    -0.3011         21
+## Variables not shown: rankState2 (int), rankState3 (int), rankState4 (int),
+##   rankState5 (int)</code></pre>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

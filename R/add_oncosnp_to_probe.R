@@ -13,10 +13,11 @@
 #'    to map the information to.
 #' @return A modified data.frame of the probeDf that contains extra columns for
 #'    shifted LRR and ranks from OncoSNP
+#' @export
 #' @examples
 #' AddOncosnp2PennCNVProbe(..., ploidyConfig = 1)
 #' AddOncosnp2PennCNVProbe(..., ploidyConfig = 2)
-AddOncosnp2PennCNVProbe <- function(cnvDf, qcDf, probeDf, ploidyConfig = 1L){
+add_oncosnp_to_penncnv_probe <- function(cnvDf, qcDf, probeDf, ploidyConfig = 1L){
   LRR.shift <- dplyr::filter_(qcDf, ~ploidyNo == ploidyConfig)[, "LRRShift"]
   LRR.shift <- as.double(LRR.shift)
 

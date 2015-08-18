@@ -23,6 +23,7 @@ The oncosnputils R package provides several load functions for different input a
 
 ```{r}
 library("oncosnputils")
+library("dplyr")
 qcFile <- system.file("extdata", "HCC1395.qc", package = "oncosnputils")
 qcDf <- LoadOncosnpQcFile(qcFile)
 knitr::kable(qcDf)
@@ -34,14 +35,17 @@ Notice the renaming of some of the columns. This just faciliates downstream anal
 # Loading the OncoSNP CNV file
 cnvFile <- system.file("extdata", "HCC1395.cnvs", package = "oncosnputils")
 cnvDf <- LoadOncosnpCnvFile(cnvFile)
+cnvDf <- cnvDf %>%
+	filter(chr == 17)
 
-# Show only first 10 rows and 10 columns for vignette purposes
-knitr::kable(cnvDf[1:10, 1:10])
+# Use only chromosome 17 segments for Vignette purposes
+knitr::kable(cnvDf)
 ```
 
 ```{r}
 # Loading the PennCNV probe file
-probeFile <- system.file("extdata", "logR_BAF.snp_probes.txt", package = "oncosnputils")
+# Only the chromosome 17 probes are in this file 
+probeFile <- system.file("extdata", "logR_BAF.snp_probes.17.txt", package = "oncosnputils")
 probeDf <- LoadPennCNVProbeData(probeFile)
 
 # Show only first 10 rows for vignette purposes
@@ -61,8 +65,8 @@ head(cnvDf)
 We can add this information to these files by using the `AddLRRBAF2OncosnpCNV` function:
 
 ```{r, message = FALSE}
-# only add for the first 10 segments for vignette purposes
 cnvDf.LRR.BAF <- AddLRRBAF2OncosnpCNV(cnvDf[1:10, ], qcDf, probeDf)
+head(cnvDf.LRR.BAF)
 ```
 
 Now the LRR, BAF along with the number of probes in each segment have been added as additional columns to the `cnvDf` data.frame. The qcDf and probeDf need to be passed in as input as the functions needs to determine the LRR shift and also the overlapping probes wth each CNV segment.
@@ -70,7 +74,28 @@ Now the LRR, BAF along with the number of probes in each segment have been added
 Also, the `AddOncosnp2PennCNVProbe` can add the OncoSNP segment state information to the PennCNV raw probe input into OncoSNP.
 
 ```{r, message = FALSE}
-# only add for the first 5000 probes for vignette purposes
-probeDf.oncosnp <- AddOncosnp2PennCNVProbe(cnvDf, qcDf, probeDf[1:5000, ])
+probeDf.oncosnp <- AddOncosnp2PennCNVProbe(cnvDf, qcDf, probeDf)
 head(probeDf.oncosnp)
 ```
+
+# Plotting OncoSNP Results
+
+```{r, fig.width = 15, fig.height = 10}
+library("reshape2")
+rawProbeDt.melt <- 
+	probeDf.oncosnp %>% melt(id.vars = c("probeID", "chr", "pos", "finalState.modified"), 
+			 measure.vars = c("logRShifted", "baf"), 
+			 variable.name = "cnMeasure")
+
+
+rawProbeDt.melt %>%
+	filter(chr == 1, pos > 50000000, pos < 100000000) %>% 
+	ggplot(aes(pos, value, color = factor(finalState.modified))) + 
+	geom_point(shape = 1) + 
+	facet_grid(cnMeasure ~ ., scales = "free", labeller = facet_labeller) + 
+	scale_color_manual(name = "Tumour State", values = states.col) +
+	xlab("Position") + 
+	ylab("")
+```
+
+
